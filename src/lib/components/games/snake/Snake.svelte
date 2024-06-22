@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Board } from './game/Board';
 	import { Engine2D } from '$lib/game-engine/Engine2D';
+	import { Snake } from './Snake';
 
 	onMount(() => {
 		const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 		const engine = new Engine2D(canvas, 858, 525);
-		const board = new Board(engine.width, engine.height);
-		engine.root.addChild(board);
+		const snake = new Snake(engine.width, engine.height);
+		engine.root.addChild(snake);
 
 		return () => {
 			engine.dispose();

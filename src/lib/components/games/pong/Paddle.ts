@@ -5,13 +5,15 @@ import type { Board } from './Board';
 export class Paddle extends Node2D {
 	public readonly upKey: string;
 	public readonly downKey: string;
+	private color: string;
 	private board: Board;
 
-	public constructor(board: Board, upKey: string, downKey: string) {
+	public constructor(board: Board, upKey: string, downKey: string, color: string) {
 		super(Vector2D.ZERO, 20, 100);
 		this.upKey = upKey;
 		this.downKey = downKey;
 		this.board = board;
+		this.color = color;
 	}
 
 	public reset(x: number) {
@@ -37,7 +39,7 @@ export class Paddle extends Node2D {
 	protected override draw(context: CanvasRenderingContext2D): void {
 		const cornerRadius = 4;
 
-		context.fillStyle = 'hsl(220, 20%, 70%)';
+		context.fillStyle = this.color;
 
 		context.beginPath();
 		context.moveTo(this.position.x + cornerRadius, this.position.y);

@@ -12,8 +12,8 @@ export class Board extends Node2D {
 
 	public constructor(width: number, height: number) {
 		super(Vector2D.ZERO, width, height);
-		this.leftPaddle = new Paddle(this, 'w', 's');
-		this.rightPaddle = new Paddle(this, 'ArrowUp', 'ArrowDown');
+		this.leftPaddle = new Paddle(this, 'w', 's', '#ed4e42');
+		this.rightPaddle = new Paddle(this, 'ArrowUp', 'ArrowDown', '#42a3ed');
 		this.ball = new Ball(this, [this.leftPaddle, this.rightPaddle]);
 
 		this.addChild(this.leftPaddle);

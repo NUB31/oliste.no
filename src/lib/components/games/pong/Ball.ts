@@ -70,7 +70,7 @@ export class Ball extends Node2D {
 
 	protected override draw(context: CanvasRenderingContext2D): void {
 		const radius = this.width / 2;
-		context.fillStyle = 'hsl(220, 20%, 70%)';
+		context.fillStyle = 'white';
 		context.beginPath();
 		context.arc(this.position.x + radius, this.position.y + radius, radius, 0, Math.PI * 2);
 		context.fill();
