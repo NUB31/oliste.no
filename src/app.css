@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: 'Press Start 2P';
+	src: url('/PressStart2P-Regular.ttf');
+}
+
+:root {
+	--font-sans: 'Nunito', sans-serif;
+	--font-mono: 'JetBrainsMono', monospace;
+	--topbar-height: 3.5rem;
+	--sidebar-width: 15rem;
+
+	--light-50: hsl(221, 20%, 100%);
+	--light-100: hsl(221, 20%, 90%);
+	--light-200: hsl(221, 20%, 80%);
+	--light-300: hsl(221, 20%, 70%);
+	--light-400: hsl(221, 20%, 60%);
+	--light-500: hsl(221, 20%, 35%);
+	--light-600: hsl(221, 20%, 20%);
+	--light-700: hsl(221, 20%, 12%);
+	--light-800: hsl(221, 20%, 8%);
+	--light-900: hsl(221, 20%, 4%);
+
+	--dark-50: hsl(221, 20%, 4%);
+	--dark-100: hsl(221, 20%, 8%);
+	--dark-200: hsl(221, 20%, 12%);
+	--dark-300: hsl(221, 20%, 20%);
+	--dark-400: hsl(221, 20%, 35%);
+	--dark-500: hsl(221, 20%, 60%);
+	--dark-600: hsl(221, 20%, 70%);
+	--dark-700: hsl(221, 20%, 80%);
+	--dark-800: hsl(221, 20%, 90%);
+	--dark-900: hsl(221, 20%, 100%);
+
+	--blue-50: hsl(200, 75%, 60%);
+	--blue-100: hsl(200, 75%, 55%);
+	--blue-200: hsl(200, 75%, 50%);
+	--blue-300: hsl(200, 75%, 45%);
+	--blue-400: hsl(200, 75%, 40%);
+	--blue-500: hsl(200, 75%, 35%);
+	--blue-600: hsl(200, 75%, 30%);
+	--blue-700: hsl(200, 75%, 25%);
+	--blue-800: hsl(200, 75%, 20%);
+	--blue-900: hsl(200, 75%, 15%);
+	--blue-950: hsl(200, 75%, 10%);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--dark-50: hsl(221, 20%, 100%);
+		--dark-100: hsl(221, 20%, 90%);
+		--dark-200: hsl(221, 20%, 80%);
+		--dark-300: hsl(221, 20%, 70%);
+		--dark-400: hsl(221, 20%, 60%);
+		--dark-500: hsl(221, 20%, 35%);
+		--dark-600: hsl(221, 20%, 20%);
+		--dark-700: hsl(221, 20%, 12%);
+		--dark-800: hsl(221, 20%, 8%);
+		--dark-900: hsl(221, 20%, 4%);
+
+		--light-50: hsl(221, 20%, 4%);
+		--light-100: hsl(221, 20%, 8%);
+		--light-200: hsl(221, 20%, 12%);
+		--light-300: hsl(221, 20%, 20%);
+		--light-400: hsl(221, 20%, 35%);
+		--light-500: hsl(221, 20%, 60%);
+		--light-600: hsl(221, 20%, 70%);
+		--light-700: hsl(221, 20%, 80%);
+		--light-800: hsl(221, 20%, 90%);
+		--light-900: hsl(221, 20%, 100%);
+	}
+
+	a[href^='http']:after {
+		filter: invert();
+	}
+}
+
+html {
+	color-scheme: dark light;
+	background-color: var(--light-100);
+}
+
+body {
+	font-family: Arial, sans-serif;
+}
