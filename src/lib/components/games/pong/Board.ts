@@ -1,9 +1,9 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
+import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 
-export class Board extends Node2D {
+export class Board extends Rect2D {
 	private leftPaddle: Paddle;
 	private rightPaddle: Paddle;
 	private ball: Ball;
@@ -44,9 +44,7 @@ export class Board extends Node2D {
 	}
 
 	protected override process() {
-		this.engine.eventHandler.preventDefault(' ');
-
-		if (this.engine.eventHandler.wasPressed(' ')) {
+		if (this.engine.eventHandler.wasKeyPressed(' ')) {
 			if (this.started == false) {
 				this.reset();
 				this.started = true;
@@ -54,7 +52,7 @@ export class Board extends Node2D {
 		}
 	}
 
-	protected override draw(context: CanvasRenderingContext2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		context.fillStyle = 'white';
 		context.font = "12px 'Press Start 2P'";
 		context.fillText(`${this.points} points`, 20, 30, this.width - 40);

@@ -1,15 +1,16 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
+import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
 import { Food } from './Food';
 import { Snake } from './Snake';
 
-export class Board extends Node2D {
+export class Board extends Rect2D {
 	public readonly gridAlign = 40;
 	private snake: Snake;
 	private food: Food;
 	private points: number = 0;
 	private started: boolean = false;
 	private speed: number = 0.5;
+	private unRegisterKeyHandler = () => {};
 
 	public constructor(width: number, height: number) {
 		super(Vector2D.ZERO, width, height);
@@ -21,22 +22,18 @@ export class Board extends Node2D {
 	}
 
 	protected override onInitialized(): void {
-		this.engine.eventHandler.onKeydown((e) => {
-			switch (e.key) {
+		this.unRegisterKeyHandler = this.engine.eventHandler.onKeyDown((key) => {
+			switch (key) {
 				case 'ArrowLeft':
-					e.preventDefault();
 					this.snake.setNextDirection(new Vector2D(-1, 0));
 					break;
 				case 'ArrowRight':
-					e.preventDefault();
 					this.snake.setNextDirection(new Vector2D(1, 0));
 					break;
 				case 'ArrowUp':
-					e.preventDefault();
 					this.snake.setNextDirection(new Vector2D(0, -1));
 					break;
 				case 'ArrowDown':
-					e.preventDefault();
 					this.snake.setNextDirection(new Vector2D(0, 1));
 					break;
 
@@ -54,7 +51,7 @@ export class Board extends Node2D {
 		}
 	}
 
-	protected override draw(context: CanvasRenderingContext2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		context.fillStyle = 'white';
 		context.font = "12px 'Press Start 2P'";
 		context.fillText(`${this.points} points`, 20, 30, this.width - 40);
@@ -65,5 +62,9 @@ export class Board extends Node2D {
 			const measuredStartText = context.measureText(startText);
 			context.fillText(startText, this.width / 2 - measuredStartText.width / 2, this.height / 4);
 		}
+	}
+
+	protected override dispose(): void {
+		this.unRegisterKeyHandler();
 	}
 }

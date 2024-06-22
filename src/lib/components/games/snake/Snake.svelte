@@ -11,7 +11,7 @@
 		engine.root.addChild(snake);
 
 		return () => {
-			engine.dispose();
+			engine._dispose();
 		};
 	});
 </script>

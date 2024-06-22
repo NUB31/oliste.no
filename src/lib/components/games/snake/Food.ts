@@ -1,8 +1,8 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
+import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
 import type { Board } from './Board';
 
-export class Food extends Node2D {
+export class Food extends Rect2D {
 	private board: Board;
 
 	public constructor(board: Board) {
@@ -18,11 +18,9 @@ export class Food extends Node2D {
 			0,
 			this.board.height - this.height
 		).align(this.board.gridAlign);
-
-		console.log(this.position);
 	}
 
-	protected override draw(context: CanvasRenderingContext2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		context.fillStyle = 'red';
 		context.fillRect(this.position.x, this.position.y, this.width, this.height);
 	}

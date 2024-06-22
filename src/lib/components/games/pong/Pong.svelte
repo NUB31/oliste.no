@@ -11,7 +11,7 @@
 		engine.root.addChild(board);
 
 		return () => {
-			engine.dispose();
+			engine._dispose();
 		};
 	});
 </script>

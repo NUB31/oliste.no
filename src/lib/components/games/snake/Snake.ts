@@ -1,8 +1,8 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
+import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
 import type { Board } from './Board';
 
-export class Snake extends Node2D {
+export class Snake extends Rect2D {
 	private direction: Vector2D = Vector2D.ZERO;
 	private nextDirection: Vector2D = Vector2D.ZERO;
 	private nextDirectionChange: Vector2D = Vector2D.ZERO;
@@ -90,7 +90,7 @@ export class Snake extends Node2D {
 		}
 	}
 
-	protected override draw(context: CanvasRenderingContext2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		context.fillStyle = 'green';
 		context.fillRect(this.position.x, this.position.y, this.width, this.height);
 
