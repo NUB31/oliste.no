@@ -1,9 +1,9 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
 import type { Paddle } from './Paddle';
 import type { Board } from './Board';
+import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
 
-export class Ball extends Node2D {
+export class Ball extends Rect2D {
 	private direction: Vector2D;
 	private paddles: Paddle[];
 	private board: Board;
@@ -68,7 +68,7 @@ export class Ball extends Node2D {
 		this.position.add(this.direction, delta);
 	}
 
-	protected override draw(context: CanvasRenderingContext2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		const radius = this.width / 2;
 		context.fillStyle = 'white';
 		context.beginPath();

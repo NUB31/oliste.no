@@ -3,19 +3,20 @@
 	import { Board } from './Board';
 	import { Engine2D } from '$lib/game-engine/Engine2D';
 
+	let canvas: HTMLCanvasElement;
+
 	onMount(() => {
-		const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 		const engine = new Engine2D(canvas, 858, 525);
 		const board = new Board(engine.width, engine.height);
 		engine.root.addChild(board);
 
 		return () => {
-			engine.dispose();
+			engine._dispose();
 		};
 	});
 </script>
 
-<canvas id="canvas"></canvas>
+<canvas bind:this={canvas}></canvas>
 
 <style>
 	canvas {

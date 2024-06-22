@@ -1,8 +1,8 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
+import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
 import type { Board } from './Board';
 
-export class Paddle extends Node2D {
+export class Paddle extends Rect2D {
 	public readonly upKey: string;
 	public readonly downKey: string;
 	private color: string;
@@ -21,22 +21,19 @@ export class Paddle extends Node2D {
 	}
 
 	protected override process(delta: number) {
-		this.engine.eventHandler.preventDefault(this.upKey);
-		this.engine.eventHandler.preventDefault(this.downKey);
-
-		if (this.engine.eventHandler.isPressed(this.upKey)) {
+		if (this.engine.eventHandler.isKeyPressed(this.upKey)) {
 			if (this.position.y >= 0) {
 				this.position.add(new Vector2D(0, -1), delta);
 			}
 		}
-		if (this.engine.eventHandler.isPressed(this.downKey)) {
+		if (this.engine.eventHandler.isKeyPressed(this.downKey)) {
 			if (this.position.y + this.height <= this.board.height) {
 				this.position.add(new Vector2D(0, 1), delta);
 			}
 		}
 	}
 
-	protected override draw(context: CanvasRenderingContext2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		const cornerRadius = 4;
 
 		context.fillStyle = this.color;

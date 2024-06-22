@@ -4,14 +4,10 @@ import { Vector2D } from '../Vector2D';
 export abstract class Node2D {
 	protected readonly children: Node2D[] = [];
 	public position: Vector2D;
-	public width: number;
-	public height: number;
 	private initialization: Initialization | null = null;
 
-	public constructor(position: Vector2D = Vector2D.ZERO, width: number = 0, height: number = 0) {
+	public constructor(position: Vector2D = Vector2D.ZERO) {
 		this.position = position;
-		this.width = width;
-		this.height = height;
 	}
 
 	protected get engine(): Engine2D {
@@ -36,7 +32,7 @@ export abstract class Node2D {
 
 	protected onInitialized() {}
 	protected process(delta: number): void {}
-	protected draw(context: CanvasRenderingContext2D): void {}
+	protected draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {}
 	protected dispose(): void {}
 
 	public _cascadeInitialized(initialization: Initialization) {
@@ -58,14 +54,15 @@ export abstract class Node2D {
 		});
 	}
 
-	public _cascadeDraw(context: CanvasRenderingContext2D): void {
+	public _cascadeDraw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		context.fillStyle = 'black';
 		context.shadowBlur = 0;
 
-		this.draw(context);
 		this.children.forEach((c) => {
-			c._cascadeDraw(context);
+			c._cascadeDraw(context, mousePos);
 		});
+
+		this.draw(context, mousePos);
 	}
 
 	public _cascadeDispose() {
@@ -73,15 +70,6 @@ export abstract class Node2D {
 			c.dispose();
 		});
 		this.dispose();
-	}
-
-	public intersects(node: Node2D) {
-		return (
-			this.position.x < node.position.x + node.width &&
-			this.position.x + this.width > node.position.x &&
-			this.position.y < node.position.y + node.height &&
-			this.position.y + this.height > node.position.y
-		);
 	}
 
 	public addChild(node: Node2D) {
