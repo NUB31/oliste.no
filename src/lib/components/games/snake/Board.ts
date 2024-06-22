@@ -58,7 +58,7 @@ export class Board extends Rect2D {
 
 		if (!this.started) {
 			context.font = "16px 'Press Start 2P'";
-			const startText = 'Press an arrow key to start';
+			const startText = 'Work in progress';
 			const measuredStartText = context.measureText(startText);
 			context.fillText(startText, this.width / 2 - measuredStartText.width / 2, this.height / 4);
 		}
