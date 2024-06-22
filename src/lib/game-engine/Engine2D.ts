@@ -13,9 +13,16 @@ export class Engine2D {
 	public readonly width: number;
 	public readonly height: number;
 	private lastTick: number;
+	private btf: boolean;
 
-	public constructor(canvas: HTMLCanvasElement, width: number, height: number) {
+	public constructor(
+		canvas: HTMLCanvasElement,
+		width: number,
+		height: number,
+		btf: boolean = true
+	) {
 		this.lastTick = Date.now();
+		this.btf = btf;
 		this.root = new Root2D();
 		this.root._cascadeInitialized({
 			engine: this,
@@ -46,12 +53,12 @@ export class Engine2D {
 		this.lastTick = now;
 
 		this.root._cascadeProcess(delta);
-		this.root._cascadeDraw(this.context);
+		this.root._cascadeDraw(this.context, this.btf);
 		this.eventHandler.tick();
 	}
 
 	public dispose() {
-		this.eventHandler.dispose();
+		this.eventHandler._dispose();
 		this.root._cascadeDispose();
 	}
 }

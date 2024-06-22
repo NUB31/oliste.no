@@ -62,10 +62,11 @@ export abstract class Node2D {
 		context.fillStyle = 'black';
 		context.shadowBlur = 0;
 
-		this.draw(context);
 		this.children.forEach((c) => {
 			c._cascadeDraw(context);
 		});
+
+		this.draw(context);
 	}
 
 	public _cascadeDispose() {
@@ -75,12 +76,12 @@ export abstract class Node2D {
 		this.dispose();
 	}
 
-	public intersects(node: Node2D) {
+	public intersects(node: Node2D, tolerance: number = 0.0001): boolean {
 		return (
-			this.position.x < node.position.x + node.width &&
-			this.position.x + this.width > node.position.x &&
-			this.position.y < node.position.y + node.height &&
-			this.position.y + this.height > node.position.y
+			this.position.x < node.position.x + node.width + tolerance &&
+			this.position.x + this.width > node.position.x - tolerance &&
+			this.position.y < node.position.y + node.height + tolerance &&
+			this.position.y + this.height > node.position.y - tolerance
 		);
 	}
 
@@ -96,6 +97,11 @@ export abstract class Node2D {
 		if (index > -1) {
 			this.children.splice(index, 1);
 		}
+	}
+
+	public setSize(width: number, height: number) {
+		this.width = width;
+		this.height = height;
 	}
 
 	public toString() {

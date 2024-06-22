@@ -51,7 +51,7 @@ export class EventHandler {
 		this.wasPressedKeys.clear();
 	}
 
-	public dispose(): void {
+	public _dispose(): void {
 		window.removeEventListener('keydown', this.handleKeyDown);
 		window.removeEventListener('keyup', this.handleKeyUp);
 	}
