@@ -35,7 +35,6 @@ export class SettingsNode extends Node2D {
 					this.rect.height - this.padding * 2
 				).wrapsPosition(mousePos)
 			) {
-				console.log('JfkjHJKJLJg');
 				this.shouldDraw = false;
 				this.shouldProcess = false;
 				return true;
