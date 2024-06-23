@@ -1,20 +1,24 @@
 import type { Engine2D, Initialization } from '../Engine2D';
+import { Rect } from '../Rect';
 import { Vector2D } from '../Vector2D';
 
-export abstract class Node2D {
+export class Node2D {
 	protected readonly children: Node2D[] = [];
-	public position: Vector2D;
 	private initialization: Initialization | null = null;
+	public rect: Rect;
+	public visible: boolean = true;
 
-	public constructor(position: Vector2D = Vector2D.ZERO) {
-		this.position = position;
+	public constructor(rect: Rect = new Rect()) {
+		this.rect = rect;
+	}
+
+	private createUninitializedMessage(propertyAccess: string) {
+		return `Cannot access {${propertyAccess}} until node is initialized. You can use the {${propertyAccess}} safely in onInitialized() or process() as long as you have added this node as a (grand)child of the root node`;
 	}
 
 	protected get engine(): Engine2D {
 		if (this.initialization == null) {
-			throw new Error(
-				'Cannot access engine until node is initialized. You can use the engine safely in onInitialized() or process() as long as you have added this node as a (grand)child of the root node'
-			);
+			throw new Error(this.createUninitializedMessage('engine'));
 		}
 
 		return this.initialization.engine;
@@ -22,9 +26,7 @@ export abstract class Node2D {
 
 	protected get root(): Node2D {
 		if (this.initialization == null) {
-			throw new Error(
-				'Cannot access root until node is initialized. You can use the root safely in onInitialized() or process() as long as you have added this node as a (grand)child of the root node'
-			);
+			throw new Error(this.createUninitializedMessage('root'));
 		}
 
 		return this.initialization.root;
@@ -58,11 +60,13 @@ export abstract class Node2D {
 		context.fillStyle = 'black';
 		context.shadowBlur = 0;
 
-		this.children.forEach((c) => {
-			c._cascadeDraw(context, mousePos);
-		});
+		if (this.visible) {
+			this.children.forEach((c) => {
+				c._cascadeDraw(context, mousePos);
+			});
 
-		this.draw(context, mousePos);
+			this.draw(context, mousePos);
+		}
 	}
 
 	public _cascadeDispose() {

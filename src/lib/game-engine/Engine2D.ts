@@ -1,26 +1,33 @@
-import { Root2D } from './nodes/Root2D';
 import { EventHandler } from './EventHandler';
+import { Label2D } from './nodes/Label2D';
+import { Node2D } from './nodes/Node2D';
+import { Vector2D } from './Vector2D';
 
 export type Initialization = {
 	engine: Engine2D;
-	root: Root2D;
+	root: Node2D;
 };
 
 export class Engine2D {
 	public readonly eventHandler: EventHandler;
-	public readonly root: Root2D;
+	public readonly root: Node2D;
 	public readonly context: CanvasRenderingContext2D;
 	public readonly canvas: HTMLCanvasElement;
 	public readonly width: number;
 	public readonly height: number;
-	private debugDisplay: boolean = false;
+	private readonly debugNode: Label2D;
 	private lastTick: number;
 
 	public constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 		this.width = width;
 		this.height = height;
-		this.root = new Root2D();
+		this.root = new Node2D();
 		this.canvas = canvas;
+		this.debugNode = new Label2D(new Vector2D(this.width - 185, 10), 175, '', {
+			fontSize: 8,
+			backgroundColor: 'hsl(0, 0%, 0%, 0.8)'
+		});
+		this.debugNode.visible = false;
 
 		this.canvas.width = this.width;
 		this.canvas.height = this.height;
@@ -32,6 +39,7 @@ export class Engine2D {
 		this.context = ctx;
 		this.eventHandler = new EventHandler(canvas);
 
+		this.root.addChild(this.debugNode);
 		this.root._cascadeInitialized({
 			engine: this,
 			root: this.root
@@ -39,7 +47,7 @@ export class Engine2D {
 
 		this.eventHandler.onKeyDown((key) => {
 			if (key == 'f' && this.eventHandler.isKeyPressed('Control')) {
-				this.debugDisplay = !this.debugDisplay;
+				this.debugNode.visible = !this.debugNode.visible;
 			}
 		});
 
@@ -48,32 +56,59 @@ export class Engine2D {
 		requestAnimationFrame(this.loop);
 	}
 
+	private measureTime(cb: () => void): number {
+		const start = Date.now();
+		cb();
+		return Date.now() - start;
+	}
+
 	private loop() {
 		const now = Date.now();
 		const delta = now - this.lastTick;
 		this.lastTick = now;
 
-		if (document.activeElement === this.canvas) {
-			this.tick(delta);
-		} else {
-			this.drawLostFocus();
-		}
+		let processTime = 0;
+		let drawTime = 0;
+		let eventHandlerTime = 0;
 
-		if (this.debugDisplay) {
-			this.drawDebug(delta);
+		const totalTime = this.measureTime(() => {
+			if (document.activeElement === this.canvas) {
+				processTime = this.measureTime(() => {
+					this.root._cascadeProcess(delta);
+				});
+
+				drawTime = this.measureTime(() => {
+					this.context.clearRect(0, 0, this.width, this.height);
+					this.root._cascadeDraw(this.context, this.eventHandler.getMousePos());
+				});
+
+				eventHandlerTime = this.measureTime(() => {
+					this.eventHandler._process();
+				});
+			} else {
+				this.drawLostFocus();
+			}
+		});
+
+		if (this.debugNode.visible) {
+			const debugLines: string[] = [
+				`fps: ${Math.round(1000 / delta)}fps`,
+				`delta: ${delta}ms`,
+				`processing: ${Math.round(processTime)}ms`,
+				`drawing: ${Math.round(drawTime)}ms`,
+				`event handling: ${Math.round(eventHandlerTime)}ms`,
+				`idle: ${Math.round(delta - totalTime)}ms`,
+				`total: ${Math.round(totalTime)}ms`
+			];
+
+			this.debugNode.text = debugLines.join('\n');
 		}
 
 		requestAnimationFrame(this.loop);
 	}
 
-	private tick(delta: number) {
-		this.root._cascadeProcess(delta);
-		this.root._cascadeDraw(this.context);
-		this.eventHandler._process();
-	}
-
 	private drawLostFocus() {
-		this.root._cascadeDraw(this.context);
+		this.root._cascadeDraw(this.context, this.eventHandler.getMousePos());
 		this.context.fillStyle = 'hsl(0,0%,0%,0.9)';
 		this.context.fillRect(0, 0, this.width, this.height);
 
@@ -95,30 +130,6 @@ export class Engine2D {
 			this.width / 2 - measuredBody.width / 2,
 			this.height / 4 + measuredBody.fontBoundingBoxAscent + 5
 		);
-	}
-
-	private drawDebug(delta: number) {
-		this.context.font = "8px 'Press Start 2P'";
-
-		const debugLines: string[] = [`delta: ${delta}ms`, `fps: ${Math.round(1000 / delta)}fps`];
-
-		let height = 0;
-		let width = 0;
-		debugLines.forEach((line) => {
-			const measured = this.context.measureText(line);
-			height += measured.fontBoundingBoxAscent + 6;
-			if (measured.width > width) {
-				width = measured.width;
-			}
-		});
-
-		this.context.fillStyle = 'hsl(0,0%,0%,0.8)';
-		this.context.fillRect(this.width - width - 45, 15, width + 30, height + 15);
-
-		this.context.fillStyle = 'white';
-		debugLines.forEach((line, i) => {
-			this.context.fillText(line, this.width - width - 30, 32 + (height / debugLines.length) * i);
-		});
 	}
 
 	public _dispose() {

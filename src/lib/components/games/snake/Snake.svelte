@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Engine2D } from '$lib/game-engine/Engine2D';
 	import { Board } from './Board';
@@ -23,4 +23,4 @@
 		border-radius: 8px;
 		outline: 2px solid black;
 	}
-</style>
+</style> -->
