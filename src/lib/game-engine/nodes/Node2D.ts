@@ -7,7 +7,8 @@ export class Node2D {
 	protected readonly children: Node2D[] = [];
 	private initialization: Initialization | null = null;
 	public rect: Rect;
-	public visible: boolean = true;
+	public shouldDraw: boolean = true;
+	public shouldProcess: boolean = true;
 
 	public constructor(rect: Rect = new Rect()) {
 		this.rect = rect;
@@ -51,17 +52,19 @@ export class Node2D {
 	}
 
 	public _cascadeProcess(delta: number) {
-		this.process(delta);
-		this.children.forEach((c) => {
-			c._cascadeProcess(delta);
-		});
+		if (this.shouldProcess) {
+			this.process(delta);
+			this.children.forEach((c) => {
+				c._cascadeProcess(delta);
+			});
+		}
 	}
 
 	public _cascadeDraw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
 		context.fillStyle = 'black';
 		context.shadowBlur = 0;
 
-		if (this.visible) {
+		if (this.shouldDraw) {
 			this.children.forEach((c) => {
 				c._cascadeDraw(context, mousePos);
 			});

@@ -98,6 +98,9 @@ export class Button2D extends Node2D {
 		this.unsubscribeClickHandler = this.engine.eventHandler.onClick((mousePos) => {
 			if (this.rect.wrapsPosition(mousePos)) {
 				this.onClick();
+				return true;
+			} else {
+				return false;
 			}
 		});
 	}

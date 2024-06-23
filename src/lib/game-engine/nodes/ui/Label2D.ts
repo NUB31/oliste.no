@@ -1,3 +1,5 @@
+import { Settings } from '$lib/game-engine/builtin/Settings';
+import { font } from '$lib/game-engine/utils/font';
 import { Rect } from '../../Rect';
 import { Vector2D } from '../../Vector2D';
 import { Node2D } from '../Node2D';
@@ -23,7 +25,7 @@ export class Label2D extends Node2D {
 	public constructor(rect: Rect, text: string = '', options: Label2DOptions = {}) {
 		super(rect);
 		this.text = text;
-		this.fontFamily = options.fontFamily ?? 'Press Start 2P';
+		this.fontFamily = options.fontFamily ?? Settings.defaultFontFamily;
 		this.fontSize = options.fontSize ?? 12;
 		this.alignHorizontal = options.alignHorizontal ?? 'left';
 		this.alignVertical = options.alignVertical ?? 'top';
@@ -32,7 +34,7 @@ export class Label2D extends Node2D {
 	}
 
 	protected draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
-		context.font = `${this.fontSize}px '${this.fontFamily}'`;
+		context.font = font(this.fontSize, this.fontFamily);
 
 		const textPosMap: { position: Vector2D; text: string }[] = this.text
 			.split('\n')

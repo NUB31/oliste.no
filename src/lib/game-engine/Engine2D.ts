@@ -4,6 +4,9 @@ import { Node2D } from './nodes/Node2D';
 import { Vector2D } from './Vector2D';
 import { Rect } from './Rect';
 import type { Cursor } from './types/engine';
+import { SettingsNode } from './builtin/SettingsNode';
+import { font } from './utils/font';
+import { Button2D } from './nodes/ui/Button2D';
 
 export class Engine2D {
 	public readonly eventHandler: EventHandler;
@@ -12,6 +15,7 @@ export class Engine2D {
 	public readonly width: number;
 	public readonly height: number;
 	private readonly debugNode: Label2D;
+	private readonly settingsNode: SettingsNode;
 	private lastTick: number;
 
 	public constructor(canvas: HTMLCanvasElement, width: number, height: number) {
@@ -22,7 +26,9 @@ export class Engine2D {
 			fontSize: 8,
 			backgroundColor: 'hsl(0, 0%, 0%, 0.8)'
 		});
-		this.debugNode.visible = false;
+		this.debugNode.shouldDraw = false;
+		this.settingsNode = new SettingsNode(this.width, this.height);
+		this.settingsNode.shouldDraw = false;
 
 		canvas.width = this.width;
 		canvas.height = this.height;
@@ -34,7 +40,15 @@ export class Engine2D {
 		this.context = ctx;
 		this.eventHandler = new EventHandler(canvas);
 
+		this.root.addChild(
+			new Button2D(new Rect(new Vector2D(width / 2 - 75, 20), 150, 40), 'Settings', () => {
+				this.settingsNode.shouldDraw = true;
+				this.settingsNode.shouldProcess = true;
+			})
+		);
+		this.root.addChild(this.settingsNode);
 		this.root.addChild(this.debugNode);
+
 		this.root._cascadeInitialized({
 			engine: this,
 			root: this.root
@@ -42,7 +56,10 @@ export class Engine2D {
 
 		this.eventHandler.onKeyDown((key) => {
 			if (key == 'f' && this.eventHandler.isKeyPressed('Control')) {
-				this.debugNode.visible = !this.debugNode.visible;
+				this.debugNode.shouldDraw = !this.debugNode.shouldDraw;
+				return true;
+			} else {
+				return false;
 			}
 		});
 
@@ -85,7 +102,7 @@ export class Engine2D {
 			}
 		});
 
-		if (this.debugNode.visible) {
+		if (this.debugNode.shouldDraw) {
 			const debugLines: string[] = [
 				`fps: ${Math.round(1000 / delta)}fps`,
 				`delta: ${delta}ms`,
@@ -108,7 +125,7 @@ export class Engine2D {
 		this.context.fillRect(0, 0, this.width, this.height);
 
 		this.context.fillStyle = 'white';
-		this.context.font = "16px 'Press Start 2P'";
+		this.context.font = font(16);
 
 		const missingFocusTitle = 'Game window not in focus';
 		const measuredTitle = this.context.measureText(missingFocusTitle);

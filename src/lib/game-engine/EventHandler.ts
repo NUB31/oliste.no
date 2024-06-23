@@ -3,12 +3,12 @@ import { Vector2D } from './Vector2D';
 export class EventHandler {
 	private wasPressedKeys: Set<string> = new Set<string>();
 	private currentlyPressedKeys: Set<string> = new Set<string>();
-	private keyDownHandlers: ((key: string) => void)[] = [];
-	private keyUpHandlers: ((key: string) => void)[] = [];
-	private mouseMoveHandlers: ((mousePos: Vector2D) => void)[] = [];
-	private mouseDownHandlers: ((mousePos: Vector2D) => void)[] = [];
-	private mouseUpHandlers: ((mousePos: Vector2D) => void)[] = [];
-	private clickHandlers: ((mousePos: Vector2D) => void)[] = [];
+	private keyDownHandlers: ((key: string) => boolean)[] = [];
+	private keyUpHandlers: ((key: string) => boolean)[] = [];
+	private mouseMoveHandlers: ((mousePos: Vector2D) => boolean)[] = [];
+	private mouseDownHandlers: ((mousePos: Vector2D) => boolean)[] = [];
+	private mouseUpHandlers: ((mousePos: Vector2D) => boolean)[] = [];
+	private clickHandlers: ((mousePos: Vector2D) => boolean)[] = [];
 	private mouseDown: boolean = false;
 	private mousePos: Vector2D = Vector2D.ZERO;
 	private canvas: HTMLElement;
@@ -34,32 +34,32 @@ export class EventHandler {
 		}
 	}
 
-	public onKeyDown(handler: (key: string) => void): () => void {
+	public onKeyDown(handler: (key: string) => boolean): () => void {
 		this.keyDownHandlers.push(handler);
 		return () => this.keyDownHandlers.splice(this.keyDownHandlers.indexOf(handler));
 	}
 
-	public onKeyUp(handler: (key: string) => void): () => void {
+	public onKeyUp(handler: (key: string) => boolean): () => void {
 		this.keyUpHandlers.push(handler);
 		return () => this.keyUpHandlers.splice(this.keyUpHandlers.indexOf(handler));
 	}
 
-	public onMouseMove(handler: (mousePos: Vector2D) => void): () => void {
+	public onMouseMove(handler: (mousePos: Vector2D) => boolean): () => void {
 		this.mouseMoveHandlers.push(handler);
 		return () => this.mouseMoveHandlers.splice(this.mouseMoveHandlers.indexOf(handler));
 	}
 
-	public onMouseDown(handler: (mousePos: Vector2D) => void): () => void {
+	public onMouseDown(handler: (mousePos: Vector2D) => boolean): () => void {
 		this.mouseDownHandlers.push(handler);
 		return () => this.mouseDownHandlers.splice(this.mouseDownHandlers.indexOf(handler));
 	}
 
-	public onMouseUp(handler: (mousePos: Vector2D) => void): () => void {
+	public onMouseUp(handler: (mousePos: Vector2D) => boolean): () => void {
 		this.mouseUpHandlers.push(handler);
 		return () => this.mouseUpHandlers.splice(this.mouseUpHandlers.indexOf(handler));
 	}
 
-	public onClick(handler: (mousePos: Vector2D) => void): () => void {
+	public onClick(handler: (mousePos: Vector2D) => boolean): () => void {
 		this.clickHandlers.push(handler);
 		return () => this.clickHandlers.splice(this.clickHandlers.indexOf(handler));
 	}
@@ -84,13 +84,19 @@ export class EventHandler {
 		e.preventDefault();
 		this.wasPressedKeys.add(e.key);
 		this.currentlyPressedKeys.add(e.key);
-		this.keyDownHandlers.forEach((handler) => handler(e.key));
+		for (const handler of this.keyDownHandlers) {
+			const consumed = handler(e.key);
+			if (consumed) break;
+		}
 	}
 
 	private handleKeyUp(e: KeyboardEvent): void {
 		e.preventDefault();
 		this.currentlyPressedKeys.delete(e.key);
-		this.keyUpHandlers.forEach((handler) => handler(e.key));
+		for (const handler of this.keyUpHandlers) {
+			const consumed = handler(e.key);
+			if (consumed) break;
+		}
 	}
 
 	private handleMouseMove(e: MouseEvent): void {
@@ -98,19 +104,28 @@ export class EventHandler {
 		const rect = this.canvas.getBoundingClientRect();
 		this.mousePos.x = e.clientX - rect.left;
 		this.mousePos.y = e.clientY - rect.top;
-		this.mouseMoveHandlers.forEach((handler) => handler(this.getMousePos()));
+		for (const handler of this.mouseMoveHandlers) {
+			const consumed = handler(this.getMousePos());
+			if (consumed) break;
+		}
 	}
 
 	private handleMouseDown(e: MouseEvent): void {
 		e.preventDefault();
 		this.mouseDown = true;
-		this.mouseDownHandlers.forEach((handler) => handler(this.getMousePos()));
+		for (const handler of this.mouseDownHandlers) {
+			const consumed = handler(this.getMousePos());
+			if (consumed) break;
+		}
 	}
 
 	private handleMouseUp(e: MouseEvent): void {
 		e.preventDefault();
 		this.mouseDown = false;
-		this.mouseUpHandlers.forEach((handler) => handler(this.getMousePos()));
+		for (const handler of this.mouseUpHandlers) {
+			const consumed = handler(this.getMousePos());
+			if (consumed) break;
+		}
 	}
 
 	private handleClick(e: MouseEvent): void {
@@ -120,7 +135,10 @@ export class EventHandler {
 			return;
 		}
 
-		this.clickHandlers.forEach((handler) => handler(this.getMousePos()));
+		for (const handler of this.clickHandlers) {
+			const consumed = handler(this.getMousePos());
+			if (consumed) break;
+		}
 	}
 
 	public _process(): void {

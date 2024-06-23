@@ -84,16 +84,16 @@ export class Board extends Node2D {
 	public start() {
 		this.reset();
 		this.started = true;
-		this.startGameLabel.visible = false;
-		this.leftPaddleTutorialLabel.visible = false;
-		this.rightPaddleTutorialLabel.visible = false;
+		this.startGameLabel.shouldDraw = false;
+		this.leftPaddleTutorialLabel.shouldDraw = false;
+		this.rightPaddleTutorialLabel.shouldDraw = false;
 	}
 
 	public stop() {
 		this.started = false;
-		this.startGameLabel.visible = true;
-		this.leftPaddleTutorialLabel.visible = true;
-		this.rightPaddleTutorialLabel.visible = true;
+		this.startGameLabel.shouldDraw = true;
+		this.leftPaddleTutorialLabel.shouldDraw = true;
+		this.rightPaddleTutorialLabel.shouldDraw = true;
 	}
 
 	protected override process() {
