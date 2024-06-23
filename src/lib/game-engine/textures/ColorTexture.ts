@@ -1,9 +1,9 @@
 import type { Rect } from '../Rect';
-import type { ITexture } from './Texture';
+import type { ITexture } from './ITexture';
 
 export class ColorTexture implements ITexture {
-	private color: string;
-	private cornerRadius: number;
+	public color: string;
+	public cornerRadius: number;
 
 	public constructor(color: string, cornerRadius: number = 0) {
 		this.color = color;

@@ -1,6 +1,6 @@
 import { Rect } from '$lib/game-engine/Rect';
 import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Label2D } from '$lib/game-engine/nodes/Label2D';
+import { Label2D } from '$lib/game-engine/nodes/ui/Label2D';
 import { Node2D } from '$lib/game-engine/nodes/Node2D';
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
@@ -22,20 +22,22 @@ export class Board extends Node2D {
 		this.rightPaddle = new Paddle(this, 'ArrowUp', 'ArrowDown', '#42a3ed');
 		this.ball = new Ball(this, [this.leftPaddle, this.rightPaddle]);
 
-		this.scoreLabel = new Label2D(new Vector2D(20, 20), this.rect.width - 40, '0 points');
+		this.scoreLabel = new Label2D(
+			new Rect(new Vector2D(20, 20), this.rect.width - 40, 20),
+			'0 points'
+		);
 		this.startGameLabel = new Label2D(
-			new Vector2D(20, this.rect.height / 3),
-			this.rect.width - 40,
+			new Rect(new Vector2D(20, this.rect.height / 3), this.rect.width - 40, 100),
 			'Press space to start',
 			{
-				align: 'center',
+				alignHorizontal: 'center',
+				alignVertical: 'center',
 				fontSize: 16
 			}
 		);
 
 		this.leftPaddleTutorialLabel = new Label2D(
-			new Vector2D(20, rect.height - 30),
-			this.rect.width / 2 - 20,
+			new Rect(new Vector2D(20, rect.height - 30), this.rect.width / 2 - 20, 20),
 			this.paddleTutorialMessage(this.leftPaddle),
 			{
 				fontSize: 8
@@ -43,11 +45,10 @@ export class Board extends Node2D {
 		);
 
 		this.rightPaddleTutorialLabel = new Label2D(
-			new Vector2D(this.rect.width / 2, rect.height - 30),
-			this.rect.width / 2 - 20,
+			new Rect(new Vector2D(this.rect.width / 2, rect.height - 30), this.rect.width / 2 - 20, 20),
 			this.paddleTutorialMessage(this.rightPaddle),
 			{
-				align: 'right',
+				alignHorizontal: 'right',
 				fontSize: 8
 			}
 		);

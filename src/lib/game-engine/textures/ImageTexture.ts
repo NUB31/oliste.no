@@ -1,5 +1,5 @@
 import type { Rect } from '../Rect';
-import type { ITexture } from './Texture';
+import type { ITexture } from './ITexture';
 
 export class ImageTexture implements ITexture {
 	private image: CanvasImageSource;

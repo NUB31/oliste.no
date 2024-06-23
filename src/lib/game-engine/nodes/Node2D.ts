@@ -1,4 +1,5 @@
-import type { Engine2D, Initialization } from '../Engine2D';
+import type { Engine2D } from '../Engine2D';
+import type { Initialization } from '../types/engine';
 import { Rect } from '../Rect';
 import { Vector2D } from '../Vector2D';
 

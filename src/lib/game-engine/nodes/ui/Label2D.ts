@@ -1,11 +1,12 @@
-import { Rect } from '../Rect';
-import { Vector2D } from '../Vector2D';
-import { Node2D } from './Node2D';
+import { Rect } from '../../Rect';
+import { Vector2D } from '../../Vector2D';
+import { Node2D } from '../Node2D';
 
 interface Label2DOptions {
 	fontFamily?: string;
 	fontSize?: number;
-	align?: 'left' | 'right' | 'center';
+	alignHorizontal?: 'left' | 'center' | 'right';
+	alignVertical?: 'top' | 'center' | 'bottom';
 	color?: string;
 	backgroundColor?: string;
 }
@@ -14,21 +15,18 @@ export class Label2D extends Node2D {
 	public text: string;
 	public fontFamily: string;
 	public fontSize: number;
-	public align: 'left' | 'right' | 'center';
+	public alignHorizontal: 'left' | 'center' | 'right';
+	public alignVertical: 'top' | 'center' | 'bottom';
 	public color: string;
 	public backgroundColor: string | null;
 
-	public constructor(
-		position: Vector2D,
-		width: number,
-		text: string = '',
-		options: Label2DOptions = {}
-	) {
-		super(new Rect(position, width));
+	public constructor(rect: Rect, text: string = '', options: Label2DOptions = {}) {
+		super(rect);
 		this.text = text;
 		this.fontFamily = options.fontFamily ?? 'Press Start 2P';
 		this.fontSize = options.fontSize ?? 12;
-		this.align = options.align ?? 'left';
+		this.alignHorizontal = options.alignHorizontal ?? 'left';
+		this.alignVertical = options.alignVertical ?? 'top';
 		this.color = options.color ?? 'white';
 		this.backgroundColor = options.backgroundColor ?? null;
 	}
@@ -42,7 +40,7 @@ export class Label2D extends Node2D {
 				const measured = context.measureText(text);
 
 				let x = this.rect.position.x + 8;
-				switch (this.align) {
+				switch (this.alignHorizontal) {
 					case 'center':
 						x = this.rect.position.x + this.rect.width / 2 - measured.width / 2;
 						break;
@@ -58,6 +56,22 @@ export class Label2D extends Node2D {
 					text: text
 				};
 			});
+
+		const heightDiff =
+			this.rect.position.y + this.rect.height - textPosMap[textPosMap.length - 1].position.y - 8;
+
+		switch (this.alignVertical) {
+			case 'center':
+				textPosMap.forEach((textPos) => {
+					textPos.position.y += heightDiff / 2;
+				});
+				break;
+			case 'bottom':
+				textPosMap.forEach((textPos) => {
+					textPos.position.y += heightDiff;
+				});
+				break;
+		}
 
 		if (this.backgroundColor) {
 			context.fillStyle = this.backgroundColor;

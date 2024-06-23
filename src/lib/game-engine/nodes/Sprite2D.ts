@@ -1,7 +1,7 @@
 import type { Vector2D } from '../Vector2D';
 import { Node2D } from './Node2D';
 import { Rect } from '../Rect';
-import type { ITexture } from '../textures/Texture';
+import type { ITexture } from '../textures/ITexture';
 
 export class Sprite2D extends Node2D {
 	private texture: ITexture;

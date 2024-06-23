@@ -1,18 +1,14 @@
 import { EventHandler } from './EventHandler';
-import { Label2D } from './nodes/Label2D';
+import { Label2D } from './nodes/ui/Label2D';
 import { Node2D } from './nodes/Node2D';
 import { Vector2D } from './Vector2D';
-
-export type Initialization = {
-	engine: Engine2D;
-	root: Node2D;
-};
+import { Rect } from './Rect';
+import type { Cursor } from './types/engine';
 
 export class Engine2D {
 	public readonly eventHandler: EventHandler;
 	public readonly root: Node2D;
 	public readonly context: CanvasRenderingContext2D;
-	public readonly canvas: HTMLCanvasElement;
 	public readonly width: number;
 	public readonly height: number;
 	private readonly debugNode: Label2D;
@@ -22,17 +18,16 @@ export class Engine2D {
 		this.width = width;
 		this.height = height;
 		this.root = new Node2D();
-		this.canvas = canvas;
-		this.debugNode = new Label2D(new Vector2D(this.width - 185, 10), 175, '', {
+		this.debugNode = new Label2D(new Rect(new Vector2D(this.width - 185, 10), 175, 100), '', {
 			fontSize: 8,
 			backgroundColor: 'hsl(0, 0%, 0%, 0.8)'
 		});
 		this.debugNode.visible = false;
 
-		this.canvas.width = this.width;
-		this.canvas.height = this.height;
+		canvas.width = this.width;
+		canvas.height = this.height;
 
-		const ctx = this.canvas.getContext('2d');
+		const ctx = canvas.getContext('2d');
 		if (!ctx) {
 			throw new Error('Canvas 2d context is null');
 		}
@@ -72,7 +67,7 @@ export class Engine2D {
 		let eventHandlerTime = 0;
 
 		const totalTime = this.measureTime(() => {
-			if (document.activeElement === this.canvas) {
+			if (document.activeElement === this.context.canvas) {
 				processTime = this.measureTime(() => {
 					this.root._cascadeProcess(delta);
 				});
@@ -135,5 +130,13 @@ export class Engine2D {
 	public _dispose() {
 		this.eventHandler._dispose();
 		this.root._cascadeDispose();
+	}
+
+	public setCursor(cursor: Cursor) {
+		this.context.canvas.style.cursor = cursor;
+	}
+
+	public resetCursor() {
+		this.context.canvas.style.cursor = 'auto';
 	}
 }
