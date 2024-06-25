@@ -1,31 +1,42 @@
-import { Root2D } from './nodes/Root2D';
 import { EventHandler } from './EventHandler';
+import { Node2D } from './nodes/Node2D';
+import { Vector2D } from './Vector2D';
+import { Rect } from './Rect';
+import type { Cursor } from './types/engine';
+import { font } from './utils/font';
+import { EngineUINode } from './builtin/EngineUINode';
+import { cssVar } from './utils/color';
 
-export type Initialization = {
-	engine: Engine2D;
-	root: Root2D;
-};
+class DebugInfo {
+	public delta: number = 0;
+	public processTime: number = 0;
+	public drawTime: number = 0;
+	public eventHandlerTime: number = 0;
+	public totalTime: number = 0;
+}
 
 export class Engine2D {
+	public readonly root: Node2D;
+	private readonly engineUINode: Node2D;
 	public readonly eventHandler: EventHandler;
-	public readonly root: Root2D;
 	public readonly context: CanvasRenderingContext2D;
-	public readonly canvas: HTMLCanvasElement;
 	public readonly width: number;
 	public readonly height: number;
-	private debugDisplay: boolean = false;
+	public readonly debugInfo = new DebugInfo();
+	public shouldProcess: boolean = true;
+
 	private lastTick: number;
 
 	public constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 		this.width = width;
 		this.height = height;
-		this.root = new Root2D();
-		this.canvas = canvas;
+		canvas.width = this.width;
+		canvas.height = this.height;
 
-		this.canvas.width = this.width;
-		this.canvas.height = this.height;
+		this.root = new Node2D(new Rect(Vector2D.ZERO, width, height));
+		this.engineUINode = new EngineUINode(new Rect(Vector2D.ZERO, width, height));
 
-		const ctx = this.canvas.getContext('2d');
+		const ctx = canvas.getContext('2d');
 		if (!ctx) {
 			throw new Error('Canvas 2d context is null');
 		}
@@ -37,10 +48,9 @@ export class Engine2D {
 			root: this.root
 		});
 
-		this.eventHandler.onKeyDown((key) => {
-			if (key == 'f' && this.eventHandler.isKeyPressed('Control')) {
-				this.debugDisplay = !this.debugDisplay;
-			}
+		this.engineUINode._cascadeInitialized({
+			engine: this,
+			root: this.root
 		});
 
 		this.lastTick = Date.now();
@@ -48,37 +58,63 @@ export class Engine2D {
 		requestAnimationFrame(this.loop);
 	}
 
+	private measureTime(cb: () => void): number {
+		const start = Date.now();
+		cb();
+		return Date.now() - start;
+	}
+
 	private loop() {
 		const now = Date.now();
 		const delta = now - this.lastTick;
 		this.lastTick = now;
 
-		if (document.activeElement === this.canvas) {
-			this.tick(delta);
-		} else {
-			this.drawLostFocus();
-		}
+		let processTime = 0;
+		let drawTime = 0;
+		let eventHandlerTime = 0;
 
-		if (this.debugDisplay) {
-			this.drawDebug(delta);
-		}
+		const totalTime = this.measureTime(() => {
+			if (document.activeElement === this.context.canvas) {
+				processTime = this.measureTime(() => {
+					if (this.shouldProcess) {
+						this.root._cascadeProcess(delta);
+					}
+					this.engineUINode._cascadeProcess(delta);
+				});
+
+				drawTime = this.measureTime(() => {
+					this.context.reset();
+					this.context.fillStyle = cssVar('--light-300');
+					this.context.fillRect(0, 0, this.width, this.height);
+
+					this.root._cascadeDraw(this.context, this.eventHandler.getMousePos());
+					this.engineUINode._cascadeDraw(this.context, this.eventHandler.getMousePos());
+				});
+
+				eventHandlerTime = this.measureTime(() => {
+					this.eventHandler._process();
+				});
+			} else {
+				this.drawLostFocus();
+			}
+		});
+
+		this.debugInfo.delta = delta;
+		this.debugInfo.drawTime = drawTime;
+		this.debugInfo.eventHandlerTime = eventHandlerTime;
+		this.debugInfo.processTime = processTime;
+		this.debugInfo.totalTime = totalTime;
 
 		requestAnimationFrame(this.loop);
 	}
 
-	private tick(delta: number) {
-		this.root._cascadeProcess(delta);
-		this.root._cascadeDraw(this.context);
-		this.eventHandler._process();
-	}
-
 	private drawLostFocus() {
-		this.root._cascadeDraw(this.context);
+		this.root._cascadeDraw(this.context, this.eventHandler.getMousePos());
 		this.context.fillStyle = 'hsl(0,0%,0%,0.9)';
 		this.context.fillRect(0, 0, this.width, this.height);
 
 		this.context.fillStyle = 'white';
-		this.context.font = "16px 'Press Start 2P'";
+		this.context.font = font(16);
 
 		const missingFocusTitle = 'Game window not in focus';
 		const measuredTitle = this.context.measureText(missingFocusTitle);
@@ -97,32 +133,16 @@ export class Engine2D {
 		);
 	}
 
-	private drawDebug(delta: number) {
-		this.context.font = "8px 'Press Start 2P'";
-
-		const debugLines: string[] = [`delta: ${delta}ms`, `fps: ${Math.round(1000 / delta)}fps`];
-
-		let height = 0;
-		let width = 0;
-		debugLines.forEach((line) => {
-			const measured = this.context.measureText(line);
-			height += measured.fontBoundingBoxAscent + 6;
-			if (measured.width > width) {
-				width = measured.width;
-			}
-		});
-
-		this.context.fillStyle = 'hsl(0,0%,0%,0.8)';
-		this.context.fillRect(this.width - width - 45, 15, width + 30, height + 15);
-
-		this.context.fillStyle = 'white';
-		debugLines.forEach((line, i) => {
-			this.context.fillText(line, this.width - width - 30, 32 + (height / debugLines.length) * i);
-		});
-	}
-
 	public _dispose() {
 		this.eventHandler._dispose();
 		this.root._cascadeDispose();
+	}
+
+	public setCursor(cursor: Cursor) {
+		this.context.canvas.style.cursor = cursor;
+	}
+
+	public resetCursor() {
+		this.context.canvas.style.cursor = 'auto';
 	}
 }

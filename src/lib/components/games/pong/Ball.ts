@@ -1,15 +1,17 @@
 import { Vector2D } from '$lib/game-engine/Vector2D';
 import type { Paddle } from './Paddle';
 import type { Board } from './Board';
-import { Rect2D } from '$lib/game-engine/nodes/Rect2D';
+import { Sprite2D } from '$lib/game-engine/nodes/Sprite2D';
+import { Rect } from '$lib/game-engine/Rect';
+import { ColorTexture } from '$lib/game-engine/textures/ColorTexture';
 
-export class Ball extends Rect2D {
+export class Ball extends Sprite2D {
 	private direction: Vector2D;
 	private paddles: Paddle[];
 	private board: Board;
 
 	public constructor(board: Board, paddles: Paddle[]) {
-		super(Vector2D.ZERO, 20, 20);
+		super(new Rect(Vector2D.ZERO, 20, 20), new ColorTexture('white', 10));
 		this.direction = Vector2D.ZERO;
 		this.paddles = paddles;
 		this.board = board;
@@ -18,7 +20,7 @@ export class Ball extends Rect2D {
 
 	public reset() {
 		this.direction = new Vector2D(1, 0).normalize();
-		this.position = new Vector2D(this.board.width / 2, this.board.height / 2);
+		this.rect.position = new Vector2D(this.board.rect.width / 2, this.board.rect.height / 2);
 	}
 
 	protected override process(delta: number): void {
@@ -27,52 +29,47 @@ export class Ball extends Rect2D {
 		}
 
 		if (
-			this.position.x <= this.board.position.x ||
-			this.position.x + this.width >= this.board.position.x + this.board.width
+			this.rect.position.x <= this.board.rect.position.x ||
+			this.rect.position.x + this.rect.width >= this.board.rect.position.x + this.board.rect.width
 		) {
 			this.board.stop();
 			return;
 		}
 
-		if (this.position.y <= this.board.position.y) {
-			this.position.y = this.board.position.y;
+		if (this.rect.position.y <= this.board.rect.position.y) {
+			this.rect.position.y = this.board.rect.position.y;
 			this.direction.y = -this.direction.y;
 		}
 
-		if (this.position.y + this.height >= this.board.position.y + this.board.height) {
-			this.position.y = this.board.position.y + this.board.height - this.height;
+		if (
+			this.rect.position.y + this.rect.height >=
+			this.board.rect.position.y + this.board.rect.height
+		) {
+			this.rect.position.y = this.board.rect.position.y + this.board.rect.height - this.rect.height;
 			this.direction.y = -this.direction.y;
 		}
 
 		this.paddles.forEach((paddle) => {
-			if (paddle.intersects(this)) {
+			if (paddle.rect.intersects(this.rect)) {
 				this.direction.x = -this.direction.x;
 
-				const middlePoint = this.position.y + this.height / 2;
-				const paddleMiddle = paddle.position.y + paddle.height / 2;
-				const impactFactor = (middlePoint - paddleMiddle) / (paddle.height / 2);
+				const middlePoint = this.rect.position.y + this.rect.height / 2;
+				const paddleMiddle = paddle.rect.position.y + paddle.rect.height / 2;
+				const impactFactor = (middlePoint - paddleMiddle) / (paddle.rect.height / 2);
 
 				this.direction.y += impactFactor;
 				this.direction = this.direction.normalize();
 
 				if (this.direction.x > 0) {
-					this.position.x = paddle.position.x + paddle.width;
+					this.rect.position.x = paddle.rect.position.x + paddle.rect.width;
 				} else {
-					this.position.x = paddle.position.x - this.width;
+					this.rect.position.x = paddle.rect.position.x - this.rect.width;
 				}
 
 				this.board.addPoint();
 			}
 		});
 
-		this.position.add(this.direction, delta);
-	}
-
-	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
-		const radius = this.width / 2;
-		context.fillStyle = 'white';
-		context.beginPath();
-		context.arc(this.position.x + radius, this.position.y + radius, radius, 0, Math.PI * 2);
-		context.fill();
+		this.rect.position.add(this.direction, delta);
 	}
 }
