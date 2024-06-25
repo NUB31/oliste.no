@@ -15,6 +15,10 @@ export class Rect {
 		this.height = height;
 	}
 
+	public copy(): Rect {
+		return new Rect(this.position.copy(), this.width, this.height);
+	}
+
 	public wrapsPosition(position: Vector2D): boolean {
 		return (
 			position.x >= this.position.x &&

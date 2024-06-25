@@ -1,37 +1,40 @@
 import { EventHandler } from './EventHandler';
-import { Label2D } from './nodes/ui/Label2D';
 import { Node2D } from './nodes/Node2D';
 import { Vector2D } from './Vector2D';
 import { Rect } from './Rect';
 import type { Cursor } from './types/engine';
-import { SettingsNode } from './builtin/SettingsNode';
 import { font } from './utils/font';
-import { Button2D } from './nodes/ui/Button2D';
+import { EngineUINode } from './builtin/EngineUINode';
+import { cssVar } from './utils/color';
+
+class DebugInfo {
+	public delta: number = 0;
+	public processTime: number = 0;
+	public drawTime: number = 0;
+	public eventHandlerTime: number = 0;
+	public totalTime: number = 0;
+}
 
 export class Engine2D {
-	public readonly eventHandler: EventHandler;
 	public readonly root: Node2D;
+	private readonly engineUINode: Node2D;
+	public readonly eventHandler: EventHandler;
 	public readonly context: CanvasRenderingContext2D;
 	public readonly width: number;
 	public readonly height: number;
-	private readonly debugNode: Label2D;
-	private readonly settingsNode: SettingsNode;
+	public readonly debugInfo = new DebugInfo();
+	public shouldProcess: boolean = true;
+
 	private lastTick: number;
 
 	public constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 		this.width = width;
 		this.height = height;
-		this.root = new Node2D();
-		this.debugNode = new Label2D(new Rect(new Vector2D(this.width - 185, 10), 175, 100), '', {
-			fontSize: 8,
-			backgroundColor: 'hsl(0, 0%, 0%, 0.8)'
-		});
-		this.debugNode.shouldDraw = false;
-		this.settingsNode = new SettingsNode(this.width, this.height);
-		this.settingsNode.shouldDraw = false;
-
 		canvas.width = this.width;
 		canvas.height = this.height;
+
+		this.root = new Node2D(new Rect(Vector2D.ZERO, width, height));
+		this.engineUINode = new EngineUINode(new Rect(Vector2D.ZERO, width, height));
 
 		const ctx = canvas.getContext('2d');
 		if (!ctx) {
@@ -40,27 +43,14 @@ export class Engine2D {
 		this.context = ctx;
 		this.eventHandler = new EventHandler(canvas);
 
-		this.root.addChild(
-			new Button2D(new Rect(new Vector2D(width / 2 - 75, 20), 150, 40), 'Settings', () => {
-				this.settingsNode.shouldDraw = true;
-				this.settingsNode.shouldProcess = true;
-			})
-		);
-		this.root.addChild(this.settingsNode);
-		this.root.addChild(this.debugNode);
-
 		this.root._cascadeInitialized({
 			engine: this,
 			root: this.root
 		});
 
-		this.eventHandler.onKeyDown((key) => {
-			if (key == 'f' && this.eventHandler.isKeyPressed('Control')) {
-				this.debugNode.shouldDraw = !this.debugNode.shouldDraw;
-				return true;
-			} else {
-				return false;
-			}
+		this.engineUINode._cascadeInitialized({
+			engine: this,
+			root: this.root
 		});
 
 		this.lastTick = Date.now();
@@ -86,12 +76,19 @@ export class Engine2D {
 		const totalTime = this.measureTime(() => {
 			if (document.activeElement === this.context.canvas) {
 				processTime = this.measureTime(() => {
-					this.root._cascadeProcess(delta);
+					if (this.shouldProcess) {
+						this.root._cascadeProcess(delta);
+					}
+					this.engineUINode._cascadeProcess(delta);
 				});
 
 				drawTime = this.measureTime(() => {
-					this.context.clearRect(0, 0, this.width, this.height);
+					this.context.reset();
+					this.context.fillStyle = cssVar('--light-300');
+					this.context.fillRect(0, 0, this.width, this.height);
+
 					this.root._cascadeDraw(this.context, this.eventHandler.getMousePos());
+					this.engineUINode._cascadeDraw(this.context, this.eventHandler.getMousePos());
 				});
 
 				eventHandlerTime = this.measureTime(() => {
@@ -102,19 +99,11 @@ export class Engine2D {
 			}
 		});
 
-		if (this.debugNode.shouldDraw) {
-			const debugLines: string[] = [
-				`fps: ${Math.round(1000 / delta)}fps`,
-				`delta: ${delta}ms`,
-				`processing: ${Math.round(processTime)}ms`,
-				`drawing: ${Math.round(drawTime)}ms`,
-				`event handling: ${Math.round(eventHandlerTime)}ms`,
-				`idle: ${Math.round(delta - totalTime)}ms`,
-				`total: ${Math.round(totalTime)}ms`
-			];
-
-			this.debugNode.text = debugLines.join('\n');
-		}
+		this.debugInfo.delta = delta;
+		this.debugInfo.drawTime = drawTime;
+		this.debugInfo.eventHandlerTime = eventHandlerTime;
+		this.debugInfo.processTime = processTime;
+		this.debugInfo.totalTime = totalTime;
 
 		requestAnimationFrame(this.loop);
 	}

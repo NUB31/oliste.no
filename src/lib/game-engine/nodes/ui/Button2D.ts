@@ -61,12 +61,12 @@ export class Button2D extends Node2D {
 		this.clickColor = options.clickColor ?? cssVar('--dark-200');
 
 		this.backgroundColor = options.backgroundColor ?? cssVar('--light-200');
-		this.hoverBackgroundColor = options.hoverBackgroundColor ?? cssVar('--light-300');
-		this.clickBackgroundColor = options.clickBackgroundColor ?? cssVar('--light-400');
+		this.hoverBackgroundColor = options.hoverBackgroundColor ?? cssVar('--light-100');
+		this.clickBackgroundColor = options.clickBackgroundColor ?? cssVar('--light-50');
 
-		this.borderColor = options.borderColor ?? cssVar('--light-300');
-		this.hoverBorderColor = options.hoverBorderColor ?? cssVar('--light-300');
-		this.clickBorderColor = options.clickBorderColor ?? cssVar('--light-300');
+		this.borderColor = options.borderColor ?? cssVar('--light-50');
+		this.hoverBorderColor = options.hoverBorderColor ?? cssVar('--light-50');
+		this.clickBorderColor = options.clickBorderColor ?? cssVar('--light-50');
 
 		this.label = new Label2D(this.rect, text, {
 			alignHorizontal: 'center',

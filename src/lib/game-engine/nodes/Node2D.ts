@@ -61,15 +61,14 @@ export class Node2D {
 	}
 
 	public _cascadeDraw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
-		context.fillStyle = 'black';
-		context.shadowBlur = 0;
-
 		if (this.shouldDraw) {
 			this.children.forEach((c) => {
 				c._cascadeDraw(context, mousePos);
 			});
 
+			context.save();
 			this.draw(context, mousePos);
+			context.restore();
 		}
 	}
 
