@@ -6,24 +6,10 @@ import { ButtonNode } from '../ui/ButtonNode';
 import { LabelNode } from '../ui/LabelNode';
 import { ColorTexture } from '../../textures/ColorTexture';
 import { cssVar } from '../../utils/color';
-import type { DebugNode } from './DebugNode';
+import type { EngineNode } from './EngineNode';
 
 export class SettingsNode extends Node {
-	public set enabled(value: boolean) {
-		this.shouldDraw = value;
-		this.shouldProcess = value;
-		if (value) {
-			this.engine.processBlockers.add('settingsOpen');
-		} else {
-			this.engine.processBlockers.delete('settingsOpen');
-		}
-	}
-
-	public get enabled() {
-		return this.engine.processBlockers.has('settingsOpen');
-	}
-
-	public constructor(rect: Rect, debugNode: DebugNode) {
+	public constructor(rect: Rect, engineNode: EngineNode) {
 		super(rect);
 
 		const padding = 100;
@@ -60,12 +46,25 @@ export class SettingsNode extends Node {
 			new ButtonNode(
 				new Rect(new Vector2(x + aWidth / 2 - 175, y), 350, 30),
 				'Toggle debug information',
-				debugNode.toggle
+				engineNode.toggleDebugNode
+			)
+		);
+
+		y += 50;
+		this.addChild(
+			new ButtonNode(
+				new Rect(new Vector2(x + aWidth / 2 - 175, y), 350, 30),
+				'Toggle tree visualizer',
+				engineNode.toggleTreeVisualizerNode
 			)
 		);
 	}
 
-	protected onInitialized(): void {
-		this.enabled = false;
+	protected override onInitialized(): void {
+		this.engine.processBlockers.add('settingsOpen');
+	}
+
+	protected override dispose(): void {
+		this.engine.processBlockers.delete('settingsOpen');
 	}
 }

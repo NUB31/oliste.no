@@ -108,7 +108,7 @@ export class ButtonNode extends Node {
 	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		if (this.rect.wrapsPosition(mousePos)) {
 			this.engine.setCursor('pointer');
-			if (this.engine.eventHandler.isMouseDown()) {
+			if (this.engine.eventHandler.mouseDown) {
 				this.borderTexture.color = this.clickBorderColor;
 				this.backgroundTexture.color = this.clickBackgroundColor;
 				this.label.color = this.clickColor;
@@ -121,7 +121,6 @@ export class ButtonNode extends Node {
 			this.borderTexture.color = this.borderColor;
 			this.backgroundTexture.color = this.backgroundColor;
 			this.label.color = this.color;
-			this.engine.resetCursor();
 		}
 	}
 

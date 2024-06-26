@@ -21,6 +21,10 @@ export class Engine {
 		return this.internalRoot.mainNode;
 	}
 
+	get _secretRoot(): Node {
+		return this.internalRoot;
+	}
+
 	public constructor(canvas: HTMLCanvasElement, width: number, height: number) {
 		this.loop = this.loop.bind(this);
 
@@ -74,6 +78,7 @@ export class Engine {
 				this.context.reset();
 				this.context.fillStyle = cssVar('--light-300');
 				this.context.fillRect(0, 0, this.width, this.height);
+				this.context.canvas.style.cursor = 'auto';
 
 				this.internalRoot._cascadeDraw(this.context, this.eventHandler.getMousePos());
 			});
@@ -94,10 +99,6 @@ export class Engine {
 
 	public setCursor(cursor: Cursor) {
 		this.context.canvas.style.cursor = cursor;
-	}
-
-	public resetCursor() {
-		this.context.canvas.style.cursor = 'auto';
 	}
 
 	public _dispose() {
