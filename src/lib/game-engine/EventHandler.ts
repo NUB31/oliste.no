@@ -82,7 +82,7 @@ export class EventHandler {
 		e.preventDefault();
 		this._wasPressedKeys.add(e.key);
 		this._currentlyPressedKeys.add(e.key);
-		for (const handler of this._keyDownHandlers) {
+		for (const handler of this._keyDownHandlers.toReversed()) {
 			const consumed = handler(e.key);
 			if (consumed) break;
 		}
@@ -91,7 +91,7 @@ export class EventHandler {
 	private handleKeyUp(e: KeyboardEvent): void {
 		e.preventDefault();
 		this._currentlyPressedKeys.delete(e.key);
-		for (const handler of this._keyUpHandlers) {
+		for (const handler of this._keyUpHandlers.toReversed()) {
 			const consumed = handler(e.key);
 			if (consumed) break;
 		}
@@ -102,7 +102,7 @@ export class EventHandler {
 		const rect = this.canvas.getBoundingClientRect();
 		this.mousePos.x = e.clientX - rect.left;
 		this.mousePos.y = e.clientY - rect.top;
-		for (const handler of this._mouseMoveHandlers) {
+		for (const handler of this._mouseMoveHandlers.toReversed()) {
 			const consumed = handler(this.getMousePos());
 			if (consumed) break;
 		}
@@ -111,7 +111,7 @@ export class EventHandler {
 	private handleMouseDown(e: MouseEvent): void {
 		e.preventDefault();
 		this.mouseDown = true;
-		for (const handler of this._mouseDownHandlers) {
+		for (const handler of this._mouseDownHandlers.toReversed()) {
 			const consumed = handler(this.getMousePos());
 			if (consumed) break;
 		}
@@ -120,7 +120,7 @@ export class EventHandler {
 	private handleMouseUp(e: MouseEvent): void {
 		e.preventDefault();
 		this.mouseDown = false;
-		for (const handler of this._mouseUpHandlers) {
+		for (const handler of this._mouseUpHandlers.toReversed()) {
 			const consumed = handler(this.getMousePos());
 			if (consumed) break;
 		}
@@ -133,7 +133,7 @@ export class EventHandler {
 			return;
 		}
 
-		for (const handler of this._clickHandlers) {
+		for (const handler of this._clickHandlers.toReversed()) {
 			const consumed = handler(this.getMousePos());
 			if (consumed) break;
 		}

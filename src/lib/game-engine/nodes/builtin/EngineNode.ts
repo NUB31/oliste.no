@@ -8,47 +8,81 @@ import { LostFocusNode } from './LostFocusNode';
 import { SettingsNode } from './SettingsNode';
 
 export class EngineNode extends Node {
-	private readonly debugNode: DebugNode;
-	private readonly treeVisualizerNode: TreeVisualizerNode;
+	public readonly debugNode: DebugNode;
+	public readonly treeVisualizerNode: TreeVisualizerNode;
 	private readonly settingsNode: SettingsNode;
-	private readonly settingsButton: ButtonNode;
 	private readonly lostFocusNode: LostFocusNode;
 	private keyHandler: () => void = () => {};
 
 	public constructor(rect: Rect) {
 		super(rect);
+		this.toggleSettingsNode = this.toggleSettingsNode.bind(this);
+		this.toggleDebugNode = this.toggleDebugNode.bind(this);
+		this.toggleTreeVisualizerNode = this.toggleTreeVisualizerNode.bind(this);
 
 		this.debugNode = new DebugNode(new Rect(new Vector2(this.rect.width - 250, 10), 240, 100));
 		this.treeVisualizerNode = new TreeVisualizerNode(
 			new Rect(new Vector2(10, 10), 200, this.rect.height - 20)
 		);
-		this.settingsNode = new SettingsNode(this.rect.copy(), this.debugNode, this.treeVisualizerNode);
+		this.settingsNode = new SettingsNode(this.rect.copy(), this);
 		this.lostFocusNode = new LostFocusNode(this.rect.copy());
 
-		this.settingsButton = new ButtonNode(
-			new Rect(new Vector2(this.rect.width / 2 - 75, 20), 150, 40),
-			'Settings',
-			() => {
-				this.settingsNode.enabled = !this.settingsNode.enabled;
-			}
-		);
-
-		this.addChild(this.settingsButton);
-		this.addChild(this.settingsNode);
-		this.addChild(this.debugNode);
-		this.addChild(this.treeVisualizerNode);
-		this.addChild(this.lostFocusNode);
+		this.addChild(this.lostFocusNode, 2);
 	}
 
 	protected override onInitialized(): void {
 		this.keyHandler = this.engine.eventHandler.onKeyDown((key) => {
 			if (key == 'Escape') {
-				this.settingsNode.enabled = !this.settingsNode.enabled;
+				this.toggleSettingsNode();
+				return true;
+			} else if (key == 'f' && this.engine.eventHandler.isKeyPressed('Control')) {
+				this.toggleDebugNode();
+				return true;
+			} else if (key == 'g' && this.engine.eventHandler.isKeyPressed('Control')) {
+				this.toggleTreeVisualizerNode();
 				return true;
 			} else {
 				return false;
 			}
 		});
+	}
+
+	protected override process(delta: number): void {
+		if (
+			document.activeElement != this.engine.context.canvas &&
+			!this.hasChild(this.lostFocusNode)
+		) {
+			this.addChild(this.lostFocusNode, 1);
+		} else if (
+			document.activeElement == this.engine.context.canvas &&
+			this.hasChild(this.lostFocusNode)
+		) {
+			this.removeChild(this.lostFocusNode);
+		}
+	}
+
+	public toggleDebugNode(): void {
+		if (this.hasChild(this.debugNode)) {
+			this.removeChild(this.debugNode);
+		} else {
+			this.addChild(this.debugNode, 3);
+		}
+	}
+
+	public toggleTreeVisualizerNode(): void {
+		if (this.hasChild(this.treeVisualizerNode)) {
+			this.removeChild(this.treeVisualizerNode);
+		} else {
+			this.addChild(this.treeVisualizerNode, 3);
+		}
+	}
+
+	public toggleSettingsNode(): void {
+		if (this.hasChild(this.settingsNode)) {
+			this.removeChild(this.settingsNode);
+		} else {
+			this.addChild(this.settingsNode, 1);
+		}
 	}
 
 	protected override dispose(): void {
