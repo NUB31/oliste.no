@@ -1,26 +1,26 @@
-import { Vector2D } from '$lib/game-engine/Vector2D';
+import { Vector2 } from '$lib/game-engine/Vector2';
 import type { Paddle } from './Paddle';
 import type { Board } from './Board';
-import { Sprite2D } from '$lib/game-engine/nodes/Sprite2D';
+import { SpriteNode } from '$lib/game-engine/nodes/SpriteNode';
 import { Rect } from '$lib/game-engine/Rect';
 import { ColorTexture } from '$lib/game-engine/textures/ColorTexture';
 
-export class Ball extends Sprite2D {
-	private direction: Vector2D;
+export class Ball extends SpriteNode {
+	private direction: Vector2;
 	private paddles: Paddle[];
 	private board: Board;
 
 	public constructor(board: Board, paddles: Paddle[]) {
-		super(new Rect(Vector2D.ZERO, 20, 20), new ColorTexture('white', 10));
-		this.direction = Vector2D.ZERO;
+		super(new Rect(Vector2.ZERO, 20, 20), new ColorTexture('white', 10));
+		this.direction = Vector2.ZERO;
 		this.paddles = paddles;
 		this.board = board;
 		this.reset();
 	}
 
 	public reset() {
-		this.direction = new Vector2D(1, 0).normalize();
-		this.rect.position = new Vector2D(this.board.rect.width / 2, this.board.rect.height / 2);
+		this.direction = new Vector2(1, 0).normalize();
+		this.rect.position = new Vector2(this.board.rect.width / 2, this.board.rect.height / 2);
 	}
 
 	protected override process(delta: number): void {

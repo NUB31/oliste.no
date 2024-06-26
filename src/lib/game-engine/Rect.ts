@@ -1,15 +1,15 @@
-import { Vector2D } from './Vector2D';
+import { Vector2 } from './Vector2';
 
 export class Rect {
-	public position: Vector2D;
+	public position: Vector2;
 	public width: number;
 	public height: number;
 
 	public static ZERO(width: number = 0, height: number = 0) {
-		return new Rect(Vector2D.ZERO, width, height);
+		return new Rect(Vector2.ZERO, width, height);
 	}
 
-	public constructor(position: Vector2D = Vector2D.ZERO, width: number = 0, height: number = 0) {
+	public constructor(position: Vector2 = Vector2.ZERO, width: number = 0, height: number = 0) {
 		this.position = position;
 		this.width = width;
 		this.height = height;
@@ -19,7 +19,7 @@ export class Rect {
 		return new Rect(this.position.copy(), this.width, this.height);
 	}
 
-	public wrapsPosition(position: Vector2D): boolean {
+	public wrapsPosition(position: Vector2): boolean {
 		return (
 			position.x >= this.position.x &&
 			position.x <= this.position.x + this.width &&

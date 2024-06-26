@@ -1,12 +1,12 @@
-import { Vector2D } from '../../Vector2D';
+import { Vector2 } from '../../Vector2';
 import { ColorTexture } from '../../textures/ColorTexture';
 import { Rect } from '../../Rect';
-import { Node2D } from '../Node2D';
-import { Sprite2D } from '../Sprite2D';
-import { Label2D } from './Label2D';
+import { Node } from '../Node';
+import { SpriteNode } from '../SpriteNode';
+import { LabelNode } from './LabelNode';
 import { cssVar } from '../../utils/color';
 
-interface Button2DOptions {
+interface ButtonNodeOptions {
 	color?: string;
 	hoverColor?: string;
 	clickColor?: string;
@@ -21,7 +21,7 @@ interface Button2DOptions {
 	cornerRadius?: number;
 }
 
-export class Button2D extends Node2D {
+export class ButtonNode extends Node {
 	public onClick: () => void;
 
 	private unsubscribeClickHandler: () => void = () => {};
@@ -38,7 +38,7 @@ export class Button2D extends Node2D {
 	private hoverBorderColor: string;
 	private clickBorderColor: string;
 
-	private label: Label2D;
+	private label: LabelNode;
 	private borderTexture: ColorTexture;
 	private backgroundTexture: ColorTexture;
 
@@ -50,7 +50,7 @@ export class Button2D extends Node2D {
 		position: Rect,
 		text: string,
 		onClick: () => void,
-		options: Button2DOptions = {}
+		options: ButtonNodeOptions = {}
 	) {
 		super(position);
 
@@ -68,7 +68,7 @@ export class Button2D extends Node2D {
 		this.hoverBorderColor = options.hoverBorderColor ?? cssVar('--light-50');
 		this.clickBorderColor = options.clickBorderColor ?? cssVar('--light-50');
 
-		this.label = new Label2D(this.rect, text, {
+		this.label = new LabelNode(this.rect, text, {
 			alignHorizontal: 'center',
 			alignVertical: 'center',
 			color: this.color,
@@ -77,13 +77,13 @@ export class Button2D extends Node2D {
 		});
 
 		this.borderTexture = new ColorTexture(this.borderColor, options.cornerRadius ?? 4);
-		this.addChild(new Sprite2D(position, this.borderTexture));
+		this.addChild(new SpriteNode(position, this.borderTexture));
 
 		this.backgroundTexture = new ColorTexture(this.backgroundColor, options.cornerRadius ?? 4);
 		this.addChild(
-			new Sprite2D(
+			new SpriteNode(
 				new Rect(
-					new Vector2D(position.position.x + 2, position.position.y + 2),
+					new Vector2(position.position.x + 2, position.position.y + 2),
 					position.width - 4,
 					position.height - 4
 				),
@@ -105,7 +105,7 @@ export class Button2D extends Node2D {
 		});
 	}
 
-	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		if (this.rect.wrapsPosition(mousePos)) {
 			this.engine.setCursor('pointer');
 			if (this.engine.eventHandler.isMouseDown()) {

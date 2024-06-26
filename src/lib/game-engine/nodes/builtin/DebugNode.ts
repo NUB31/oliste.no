@@ -1,7 +1,7 @@
-import type { Rect } from '../Rect';
-import { Label2D } from '../nodes/ui/Label2D';
+import type { Rect } from '../../Rect';
+import { LabelNode } from '../ui/LabelNode';
 
-export class DebugNode extends Label2D {
+export class DebugNode extends LabelNode {
 	private keyHandler: () => void = () => {};
 	private _shown: boolean = false;
 
@@ -19,8 +19,7 @@ export class DebugNode extends Label2D {
 		this.hide();
 		this.keyHandler = this.engine.eventHandler.onKeyDown((key) => {
 			if (key == 'f' && this.engine.eventHandler.isKeyPressed('Control')) {
-				this.shouldDraw = !this.shouldDraw;
-				this.shouldProcess = !this.shouldProcess;
+				this.toggle();
 				return true;
 			} else {
 				return false;
@@ -49,16 +48,28 @@ export class DebugNode extends Label2D {
 	}
 
 	protected override process(delta: number): void {
-		const info = this.engine.debugInfo;
+		const info = this.engine.debug;
 
 		const debugLines = [
+			'FRAME DATA',
 			`fps: ${Math.round(1000 / info.delta)}fps`,
 			`delta: ${info.delta}ms`,
+			'',
+			'TIMINGS',
 			`processing: ${Math.round(info.processTime)}ms`,
 			`drawing: ${Math.round(info.drawTime)}ms`,
 			`event handling: ${Math.round(info.eventHandlerTime)}ms`,
 			`idle: ${Math.round(info.delta - info.totalTime)}ms`,
-			`total: ${Math.round(info.totalTime)}ms`
+			`total (-idle): ${Math.round(info.totalTime)}ms`,
+			'',
+			'OTHER',
+			`process blockers: ${
+				this.engine.processBlockers.size == 0
+					? '[ ]'
+					: `[\n${Array.from(this.engine.processBlockers.values())
+							.map((x) => `  ${x}`)
+							.join('\n')}\n]`
+			}`
 		];
 
 		this.text = debugLines.join('\n');

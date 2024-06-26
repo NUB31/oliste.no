@@ -1,18 +1,18 @@
 import { Rect } from '$lib/game-engine/Rect';
-import { Vector2D } from '$lib/game-engine/Vector2D';
-import { Label2D } from '$lib/game-engine/nodes/ui/Label2D';
-import { Node2D } from '$lib/game-engine/nodes/Node2D';
+import { Vector2 } from '$lib/game-engine/Vector2';
+import { LabelNode } from '$lib/game-engine/nodes/ui/LabelNode';
+import { Node } from '$lib/game-engine/nodes/Node';
 import { Ball } from './Ball';
 import { Paddle } from './Paddle';
 
-export class Board extends Node2D {
+export class Board extends Node {
 	private leftPaddle: Paddle;
 	private rightPaddle: Paddle;
 	private ball: Ball;
-	private scoreLabel: Label2D;
-	private startGameLabel: Label2D;
-	private leftPaddleTutorialLabel: Label2D;
-	private rightPaddleTutorialLabel: Label2D;
+	private scoreLabel: LabelNode;
+	private startGameLabel: LabelNode;
+	private leftPaddleTutorialLabel: LabelNode;
+	private rightPaddleTutorialLabel: LabelNode;
 	public points: number = 0;
 	public started: boolean = false;
 
@@ -22,12 +22,9 @@ export class Board extends Node2D {
 		this.rightPaddle = new Paddle(this, 'ArrowUp', 'ArrowDown', '#42a3ed');
 		this.ball = new Ball(this, [this.leftPaddle, this.rightPaddle]);
 
-		this.scoreLabel = new Label2D(
-			new Rect(new Vector2D(20, 20), this.rect.width - 40, 20),
-			'0 points'
-		);
-		this.startGameLabel = new Label2D(
-			new Rect(new Vector2D(20, this.rect.height / 3), this.rect.width - 40, 100),
+		this.scoreLabel = new LabelNode(new Rect(new Vector2(20, 20), this.rect.width - 40, 20));
+		this.startGameLabel = new LabelNode(
+			new Rect(new Vector2(20, this.rect.height / 3), this.rect.width - 40, 100),
 			'Press space to start',
 			{
 				alignHorizontal: 'center',
@@ -36,16 +33,16 @@ export class Board extends Node2D {
 			}
 		);
 
-		this.leftPaddleTutorialLabel = new Label2D(
-			new Rect(new Vector2D(20, rect.height - 30), this.rect.width / 2 - 20, 20),
+		this.leftPaddleTutorialLabel = new LabelNode(
+			new Rect(new Vector2(20, rect.height - 30), this.rect.width / 2 - 20, 20),
 			this.paddleTutorialMessage(this.leftPaddle),
 			{
 				fontSize: 8
 			}
 		);
 
-		this.rightPaddleTutorialLabel = new Label2D(
-			new Rect(new Vector2D(this.rect.width / 2, rect.height - 30), this.rect.width / 2 - 20, 20),
+		this.rightPaddleTutorialLabel = new LabelNode(
+			new Rect(new Vector2(this.rect.width / 2, rect.height - 30), this.rect.width / 2 - 20, 20),
 			this.paddleTutorialMessage(this.rightPaddle),
 			{
 				alignHorizontal: 'right',
@@ -74,6 +71,7 @@ export class Board extends Node2D {
 		this.rightPaddle.reset(this.rect.width - 10 - this.rightPaddle.rect.width);
 		this.ball.reset();
 		this.points = 0;
+		this.scoreLabel.text = `${this.points} points`;
 	}
 
 	public addPoint() {

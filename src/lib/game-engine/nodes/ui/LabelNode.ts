@@ -1,10 +1,10 @@
-import { Settings } from '$lib/game-engine/builtin/Settings';
+import { Settings } from '$lib/game-engine/Settings';
 import { font } from '$lib/game-engine/utils/font';
 import { Rect } from '../../Rect';
-import { Vector2D } from '../../Vector2D';
-import { Node2D } from '../Node2D';
+import { Vector2 } from '../../Vector2';
+import { Node } from '../Node';
 
-interface Label2DOptions {
+interface LabelNodeOptions {
 	fontFamily?: string;
 	fontSize?: number;
 	alignHorizontal?: 'left' | 'center' | 'right';
@@ -13,7 +13,7 @@ interface Label2DOptions {
 	backgroundColor?: string;
 }
 
-export class Label2D extends Node2D {
+export class LabelNode extends Node {
 	public text: string;
 	public fontFamily: string;
 	public fontSize: number;
@@ -22,7 +22,7 @@ export class Label2D extends Node2D {
 	public color: string;
 	public backgroundColor: string | null;
 
-	public constructor(rect: Rect, text: string = '', options: Label2DOptions = {}) {
+	public constructor(rect: Rect, text: string = '', options: LabelNodeOptions = {}) {
 		super(rect);
 		this.text = text;
 		this.fontFamily = options.fontFamily ?? Settings.defaultFontFamily;
@@ -33,10 +33,10 @@ export class Label2D extends Node2D {
 		this.backgroundColor = options.backgroundColor ?? null;
 	}
 
-	protected draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
+	protected draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		context.font = font(this.fontSize, this.fontFamily);
 
-		const textPosMap: { position: Vector2D; text: string }[] = this.text
+		const textPosMap: { position: Vector2; text: string }[] = this.text
 			.split('\n')
 			.map((text, i) => {
 				const measured = context.measureText(text);
@@ -54,7 +54,7 @@ export class Label2D extends Node2D {
 				const y = this.rect.position.y + 8 + i * 4 + (i + 1) * measured.fontBoundingBoxAscent;
 
 				return {
-					position: new Vector2D(x, y),
+					position: new Vector2(x, y),
 					text: text
 				};
 			});
