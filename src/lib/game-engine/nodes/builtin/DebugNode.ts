@@ -51,13 +51,18 @@ export class DebugNode extends LabelNode {
 		const info = this.engine.debug;
 
 		const debugLines = [
+			'FRAME DATA',
 			`fps: ${Math.round(1000 / info.delta)}fps`,
 			`delta: ${info.delta}ms`,
+			'',
+			'TIMINGS',
 			`processing: ${Math.round(info.processTime)}ms`,
 			`drawing: ${Math.round(info.drawTime)}ms`,
 			`event handling: ${Math.round(info.eventHandlerTime)}ms`,
 			`idle: ${Math.round(info.delta - info.totalTime)}ms`,
-			`total: ${Math.round(info.totalTime)}ms`,
+			`total (-idle): ${Math.round(info.totalTime)}ms`,
+			'',
+			'OTHER',
 			`process blockers: ${
 				this.engine.processBlockers.size == 0
 					? '[ ]'
