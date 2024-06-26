@@ -35,10 +35,18 @@ export class EngineNode extends Node {
 			if (key == 'Escape') {
 				this.toggleSettingsNode();
 				return true;
-			} else if (key == 'f' && this.engine.eventHandler.isKeyPressed('Control')) {
+			} else if (
+				key.toLowerCase() == 'f' &&
+				this.engine.eventHandler.isKeyPressed('Shift') &&
+				this.engine.eventHandler.isKeyPressed('Control')
+			) {
 				this.toggleDebugNode();
 				return true;
-			} else if (key == 'g' && this.engine.eventHandler.isKeyPressed('Control')) {
+			} else if (
+				key.toLowerCase() == 'g' &&
+				this.engine.eventHandler.isKeyPressed('Shift') &&
+				this.engine.eventHandler.isKeyPressed('Control')
+			) {
 				this.toggleTreeVisualizerNode();
 				return true;
 			} else {
