@@ -49,8 +49,6 @@ export class LostFocusNode extends Node {
 	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		if (this.rect.wrapsPosition(mousePos)) {
 			this.engine.setCursor('pointer');
-		} else {
-			this.engine.resetCursor();
 		}
 	}
 }

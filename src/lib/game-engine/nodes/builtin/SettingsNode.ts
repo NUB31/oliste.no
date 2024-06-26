@@ -7,6 +7,7 @@ import { LabelNode } from '../ui/LabelNode';
 import { ColorTexture } from '../../textures/ColorTexture';
 import { cssVar } from '../../utils/color';
 import type { DebugNode } from './DebugNode';
+import type { TreeVisualizerNode } from './TreeVisualizerNode';
 
 export class SettingsNode extends Node {
 	public set enabled(value: boolean) {
@@ -23,7 +24,7 @@ export class SettingsNode extends Node {
 		return this.engine.processBlockers.has('settingsOpen');
 	}
 
-	public constructor(rect: Rect, debugNode: DebugNode) {
+	public constructor(rect: Rect, debugNode: DebugNode, treeVisualizer: TreeVisualizerNode) {
 		super(rect);
 
 		const padding = 100;
@@ -61,6 +62,15 @@ export class SettingsNode extends Node {
 				new Rect(new Vector2(x + aWidth / 2 - 175, y), 350, 30),
 				'Toggle debug information',
 				debugNode.toggle
+			)
+		);
+
+		y += 50;
+		this.addChild(
+			new ButtonNode(
+				new Rect(new Vector2(x + aWidth / 2 - 175, y), 350, 30),
+				'Toggle tree visualizer',
+				treeVisualizer.toggle
 			)
 		);
 	}

@@ -4,11 +4,11 @@ import { Rect } from '../Rect';
 import { Vector2 } from '../Vector2';
 
 export class Node {
-	protected readonly children: Node[] = [];
-	private initialization: Initialization | null = null;
+	public readonly children: Node[] = [];
 	public rect: Rect;
 	public shouldDraw: boolean = true;
 	public shouldProcess: boolean = true;
+	private initialization: Initialization | null = null;
 
 	public constructor(rect: Rect = new Rect()) {
 		this.rect = rect;

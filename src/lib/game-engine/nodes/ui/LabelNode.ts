@@ -36,7 +36,7 @@ export class LabelNode extends Node {
 	protected draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		context.font = font(this.fontSize, this.fontFamily);
 
-		const textPosMap: { position: Vector2; text: string }[] = this.text
+		const textPosMap: { position: Vector2; text: string; color: string }[] = this.text
 			.split('\n')
 			.map((text, i) => {
 				const measured = context.measureText(text);
@@ -53,9 +53,19 @@ export class LabelNode extends Node {
 
 				const y = this.rect.position.y + 8 + i * 4 + (i + 1) * measured.fontBoundingBoxAscent;
 
+				let color = 'white';
+				if (text.startsWith('{')) {
+					const index = text.indexOf('}');
+					if (index != -1) {
+						color = text.substring(1, index);
+						text = text.slice(index + 1);
+					}
+				}
+
 				return {
 					position: new Vector2(x, y),
-					text: text
+					text: text,
+					color: color
 				};
 			});
 
@@ -85,8 +95,8 @@ export class LabelNode extends Node {
 			);
 		}
 
-		context.fillStyle = this.color;
 		textPosMap.forEach((textPos) => {
+			context.fillStyle = textPos.color;
 			context.fillText(textPos.text, textPos.position.x, textPos.position.y, this.rect.width - 16);
 		});
 	}
