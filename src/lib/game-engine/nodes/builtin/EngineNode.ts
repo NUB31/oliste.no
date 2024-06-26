@@ -1,39 +1,43 @@
-import { Rect } from '../Rect';
-import { Vector2D } from '../Vector2D';
-import { Node2D } from '../nodes/Node2D';
-import { Button2D } from '../nodes/ui/Button2D';
+import { Rect } from '../../Rect';
+import { Vector2 } from '../../Vector2';
+import { Node } from '../Node';
+import { ButtonNode } from '../ui/ButtonNode';
 import { DebugNode } from './DebugNode';
+import { LostFocusNode } from './LostFocusNode';
 import { SettingsNode } from './SettingsNode';
 
-export class EngineUINode extends Node2D {
+export class EngineNode extends Node {
 	private readonly debugNode: DebugNode;
 	private readonly settingsNode: SettingsNode;
-	private readonly settingsButton: Button2D;
+	private readonly settingsButton: ButtonNode;
+	private readonly lostFocusNode: LostFocusNode;
 	private keyHandler: () => void = () => {};
 
 	public constructor(rect: Rect) {
 		super(rect);
 
-		this.debugNode = new DebugNode(new Rect(new Vector2D(this.rect.width - 185, 10), 175, 100));
+		this.debugNode = new DebugNode(new Rect(new Vector2(this.rect.width - 210, 10), 200, 100));
 		this.settingsNode = new SettingsNode(this.rect.copy(), this.debugNode);
+		this.lostFocusNode = new LostFocusNode(this.rect.copy());
 
-		this.settingsButton = new Button2D(
-			new Rect(new Vector2D(this.rect.width / 2 - 75, 20), 150, 40),
+		this.settingsButton = new ButtonNode(
+			new Rect(new Vector2(this.rect.width / 2 - 75, 20), 150, 40),
 			'Settings',
 			() => {
-				this.settingsNode.toggle();
+				this.settingsNode.enabled = !this.settingsNode.enabled;
 			}
 		);
 
 		this.addChild(this.settingsButton);
 		this.addChild(this.settingsNode);
 		this.addChild(this.debugNode);
+		this.addChild(this.lostFocusNode);
 	}
 
 	protected override onInitialized(): void {
 		this.keyHandler = this.engine.eventHandler.onKeyDown((key) => {
 			if (key == 'Escape') {
-				this.settingsNode.toggle();
+				this.settingsNode.enabled = !this.settingsNode.enabled;
 				return true;
 			} else {
 				return false;

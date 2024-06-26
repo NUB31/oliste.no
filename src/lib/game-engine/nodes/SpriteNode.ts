@@ -1,9 +1,9 @@
-import type { Vector2D } from '../Vector2D';
-import { Node2D } from './Node2D';
+import type { Vector2 } from '../Vector2';
+import { Node } from './Node';
 import { Rect } from '../Rect';
 import type { ITexture } from '../textures/ITexture';
 
-export class Sprite2D extends Node2D {
+export class SpriteNode extends Node {
 	private texture: ITexture;
 
 	public constructor(rect: Rect, texture: ITexture) {
@@ -11,7 +11,7 @@ export class Sprite2D extends Node2D {
 		this.texture = texture;
 	}
 
-	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2D): void {
+	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		this.texture.draw(context, this.rect);
 	}
 }

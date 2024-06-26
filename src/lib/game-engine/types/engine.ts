@@ -1,9 +1,9 @@
-import type { Engine2D } from '../Engine2D';
-import type { Node2D } from '../nodes/Node2D';
+import type { Engine } from '../Engine';
+import type { Node } from '../nodes/Node';
 
 export type Initialization = {
-	engine: Engine2D;
-	root: Node2D;
+	engine: Engine;
+	root: Node;
 };
 
 export type Cursor =

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Board } from './Board';
-	import { Engine2D } from '$lib/game-engine/Engine2D';
+	import { Engine } from '$lib/game-engine/Engine';
 	import { Rect } from '$lib/game-engine/Rect';
-	import { Vector2D } from '$lib/game-engine/Vector2D';
+	import { Vector2 } from '$lib/game-engine/Vector2';
 
 	let canvas: HTMLCanvasElement;
 
 	onMount(() => {
-		const engine = new Engine2D(canvas, 858, 525);
-		const board = new Board(new Rect(Vector2D.ZERO, engine.width, engine.height));
+		const engine = new Engine(canvas, 858, 525);
+		const board = new Board(new Rect(Vector2.ZERO, engine.width, engine.height));
 		engine.root.addChild(board);
 
 		return () => {

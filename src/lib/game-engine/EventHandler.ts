@@ -1,16 +1,16 @@
-import { Vector2D } from './Vector2D';
+import { Vector2 } from './Vector2';
 
 export class EventHandler {
 	private wasPressedKeys: Set<string> = new Set<string>();
 	private currentlyPressedKeys: Set<string> = new Set<string>();
 	private keyDownHandlers: ((key: string) => boolean)[] = [];
 	private keyUpHandlers: ((key: string) => boolean)[] = [];
-	private mouseMoveHandlers: ((mousePos: Vector2D) => boolean)[] = [];
-	private mouseDownHandlers: ((mousePos: Vector2D) => boolean)[] = [];
-	private mouseUpHandlers: ((mousePos: Vector2D) => boolean)[] = [];
-	private clickHandlers: ((mousePos: Vector2D) => boolean)[] = [];
+	private mouseMoveHandlers: ((mousePos: Vector2) => boolean)[] = [];
+	private mouseDownHandlers: ((mousePos: Vector2) => boolean)[] = [];
+	private mouseUpHandlers: ((mousePos: Vector2) => boolean)[] = [];
+	private clickHandlers: ((mousePos: Vector2) => boolean)[] = [];
 	private mouseDown: boolean = false;
-	private mousePos: Vector2D = Vector2D.ZERO;
+	private mousePos: Vector2 = Vector2.ZERO;
 	private canvas: HTMLElement;
 
 	public constructor(canvas: HTMLElement) {
@@ -44,22 +44,22 @@ export class EventHandler {
 		return () => this.keyUpHandlers.splice(this.keyUpHandlers.indexOf(handler));
 	}
 
-	public onMouseMove(handler: (mousePos: Vector2D) => boolean): () => void {
+	public onMouseMove(handler: (mousePos: Vector2) => boolean): () => void {
 		this.mouseMoveHandlers.push(handler);
 		return () => this.mouseMoveHandlers.splice(this.mouseMoveHandlers.indexOf(handler));
 	}
 
-	public onMouseDown(handler: (mousePos: Vector2D) => boolean): () => void {
+	public onMouseDown(handler: (mousePos: Vector2) => boolean): () => void {
 		this.mouseDownHandlers.push(handler);
 		return () => this.mouseDownHandlers.splice(this.mouseDownHandlers.indexOf(handler));
 	}
 
-	public onMouseUp(handler: (mousePos: Vector2D) => boolean): () => void {
+	public onMouseUp(handler: (mousePos: Vector2) => boolean): () => void {
 		this.mouseUpHandlers.push(handler);
 		return () => this.mouseUpHandlers.splice(this.mouseUpHandlers.indexOf(handler));
 	}
 
-	public onClick(handler: (mousePos: Vector2D) => boolean): () => void {
+	public onClick(handler: (mousePos: Vector2) => boolean): () => void {
 		this.clickHandlers.push(handler);
 		return () => this.clickHandlers.splice(this.clickHandlers.indexOf(handler));
 	}
@@ -76,7 +76,7 @@ export class EventHandler {
 		return this.mouseDown;
 	}
 
-	public getMousePos(): Vector2D {
+	public getMousePos(): Vector2 {
 		return this.mousePos.copy();
 	}
 
