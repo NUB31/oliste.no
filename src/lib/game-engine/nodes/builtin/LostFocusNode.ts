@@ -22,9 +22,17 @@ export class LostFocusNode extends Node {
 		);
 	}
 
+	protected override onInitialized(): void {
+		this.engine.processBlockers.add('lostFocus');
+	}
+
 	protected override draw(context: CanvasRenderingContext2D, mousePos: Vector2): void {
 		if (this.rect.wrapsPosition(mousePos)) {
 			this.engine.setCursor('pointer');
 		}
+	}
+
+	protected override dispose(): void {
+		this.engine.processBlockers.delete('lostFocus');
 	}
 }
